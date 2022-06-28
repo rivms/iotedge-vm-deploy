@@ -71,7 +71,7 @@
     "virtualNetworkName": "[concat('vnet-', uniquestring(parameters('dnsLabelPrefix')))]",
     "publicIPAddressName": "[concat('ip-', parameters('dnsLabelPrefix'))]",
     "addressPrefix": "10.0.0.0/16",
-    "subnet1Name": "[concat('subnet-', uniquestring(parameters('dnsLabelPrefix')))]",
+    "subnet1Name": "[parameters('subnetName')]",
     "publicIPAddressType": "Dynamic",
     "storageAccountType": "Standard_LRS",
     "vnetID": "[resourceId(parameters('virtualNetworkNameRG'), 'Microsoft.Network/virtualNetworks',variables('virtualNetworkName'))]",
