@@ -69,10 +69,7 @@
     "nicName": "[concat('nic-', uniquestring(parameters('dnsLabelPrefix')))]",
     "vmName": "[parameters('dnsLabelPrefix')]",
     "virtualNetworkName": "[parameters('virtualNetworkName')]",
-    "publicIPAddressName": "[concat('ip-', parameters('dnsLabelPrefix'))]",
-    "addressPrefix": "10.0.0.0/16",
     "subnet1Name": "[parameters('subnetName')]",
-    "publicIPAddressType": "Dynamic",
     "storageAccountType": "Standard_LRS",
     "vnetID": "[resourceId(parameters('virtualNetworkNameRG'), 'Microsoft.Network/virtualNetworks',variables('virtualNetworkName'))]",
     "subnet1Ref": "[concat(variables('vnetID'),'/subnets/',variables('subnet1Name'))]",
@@ -161,7 +158,7 @@
   "outputs": {
     "Public SSH": {
       "type": "string",
-      "value": "[concat('ssh ', reference(resourceId('Microsoft.Compute/virtualMachines', variables('vmName'))).osProfile.adminUsername, '@', reference(resourceId('Microsoft.Network/publicIPAddresses', variables('publicIPAddressName'))).dnsSettings.fqdn)]"
+      "value": "[concat('ssh ', reference(resourceId('Microsoft.Compute/virtualMachines', variables('vmName'))).osProfile.adminUsername, '@')]"
     }
   }
 }
