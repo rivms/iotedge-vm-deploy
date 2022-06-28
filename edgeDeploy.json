@@ -51,13 +51,16 @@
         "description": "SSH Key or password for the Virtual Machine. SSH key is recommended."
       }
     },
-    "allowSsh": {
-      "type": "bool",
-      "defaultValue": true,
-      "metadata": {
-        "description": "Allow SSH traffic through the firewall"
-      }
+    "virtualNetworkName": {
+      "type": "string"
+    },
+    "virtualNetworkNameRG": {
+      "type": "string"
+    },
+    "subnetName": {
+      "type": "string"
     }
+
   },
   "variables": {
     "imagePublisher": "Canonical",
@@ -68,10 +71,9 @@
     "publicIPAddressName": "[concat('ip-', parameters('dnsLabelPrefix'))]",
     "addressPrefix": "10.0.0.0/16",
     "subnet1Name": "[concat('subnet-', uniquestring(parameters('dnsLabelPrefix')))]",
-    "subnet1Prefix": "10.0.0.0/24",
     "publicIPAddressType": "Dynamic",
     "storageAccountType": "Standard_LRS",
-    "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',variables('virtualNetworkName'))]",
+    "vnetID": "[resourceId(parameters('virtualNetworkNameRG'), 'Microsoft.Network/virtualNetworks',variables('virtualNetworkName'))]",
     "subnet1Ref": "[concat(variables('vnetID'),'/subnets/',variables('subnet1Name'))]",
     "apiVersion": "2015-06-15",
     "linuxConfiguration": {
@@ -84,7 +86,6 @@
       }
     },
     "dcs": "[parameters('deviceConnectionString')]",
-    "networkSecurityGroupName": "[concat('nsg-', uniquestring(parameters('dnsLabelPrefix')))]",
     "sshRule": [{
       "name": "default-allow-22",
       "properties": {
@@ -113,57 +114,15 @@
       }
     },
     {
-      "comments": "Default Network Security Group for template",
-      "type": "Microsoft.Network/networkSecurityGroups",
-      "apiVersion": "2019-08-01",
-      "name": "[variables('networkSecurityGroupName')]",
-      "location": "[resourceGroup().location]",
-      "properties": {
-        "securityRules": "[if(parameters('allowSsh'), variables('sshRule'), variables('noRule'))]"
-      }
-    },
-    {
-      "apiVersion": "2015-06-15",
-      "type": "Microsoft.Network/virtualNetworks",
-      "name": "[variables('virtualNetworkName')]",
-      "location": "[resourceGroup().location]",
-      "dependsOn": [
-        "[resourceId('Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroupName'))]"
-      ],
-      "properties": {
-        "addressSpace": {
-          "addressPrefixes": [
-            "[variables('addressPrefix')]"
-          ]
-        },
-        "subnets": [{
-          "name": "[variables('subnet1Name')]",
-          "properties": {
-            "addressPrefix": "[variables('subnet1Prefix')]",
-            "networkSecurityGroup": {
-              "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroupName'))]"
-            }
-          }
-        }]
-      }
-    },
-    {
       "apiVersion": "2015-06-15",
       "type": "Microsoft.Network/networkInterfaces",
       "name": "[variables('nicName')]",
       "location": "[resourceGroup().location]",
-      "dependsOn": [
-        "[concat('Microsoft.Network/publicIPAddresses/', variables('publicIPAddressName'))]",
-        "[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]"
-      ],
       "properties": {
         "ipConfigurations": [{
           "name": "ipconfig1",
           "properties": {
             "privateIPAllocationMethod": "Dynamic",
-            "publicIPAddress": {
-              "id": "[resourceId('Microsoft.Network/publicIPAddresses',variables('publicIPAddressName'))]"
-            },
             "subnet": {
               "id": "[variables('subnet1Ref')]"
             }
