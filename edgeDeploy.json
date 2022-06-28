@@ -55,7 +55,8 @@
       "type": "string"
     },
     "virtualNetworkNameRG": {
-      "type": "string"
+      "type": "string",
+      "defaultValue": "[resourceGroup().name]"
     },
     "subnetName": {
       "type": "string"
