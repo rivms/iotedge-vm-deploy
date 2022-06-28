@@ -67,7 +67,7 @@
     "imagePublisher": "Canonical",
     "imageOffer": "UbuntuServer",
     "nicName": "[concat('nic-', uniquestring(parameters('dnsLabelPrefix')))]",
-    "vmName": "[concat('vm-', uniquestring(parameters('dnsLabelPrefix')))]",
+    "vmName": "[parameters('dnsLabelPrefix')]",
     "virtualNetworkName": "[parameters('virtualNetworkName')]",
     "publicIPAddressName": "[concat('ip-', parameters('dnsLabelPrefix'))]",
     "addressPrefix": "10.0.0.0/16",
@@ -102,18 +102,7 @@
     }],
     "noRule": []
   },
-  "resources": [{
-      "apiVersion": "2015-06-15",
-      "type": "Microsoft.Network/publicIPAddresses",
-      "name": "[variables('publicIPAddressName')]",
-      "location": "[resourceGroup().location]",
-      "properties": {
-        "publicIPAllocationMethod": "[variables('publicIPAddressType')]",
-        "dnsSettings": {
-          "domainNameLabel": "[parameters('dnsLabelPrefix')]"
-        }
-      }
-    },
+  "resources": [
     {
       "apiVersion": "2015-06-15",
       "type": "Microsoft.Network/networkInterfaces",
